@@ -73,7 +73,7 @@ def gameLoop():
     snake_y = 55
     velocity_x = 0
     velocity_y = 0
-    velocity_update = 5
+    velocity_update = 4
     food_x = random.randint(30, screen_width - 30)
     food_y = random.randint(30, screen_height - 30)
     snake_size = 15
@@ -131,7 +131,7 @@ def gameLoop():
             snake_x += velocity_x
             snake_y += velocity_y
 
-            if abs(snake_x - food_x) < 6 and abs(snake_y - food_y) < 6:
+            if abs(snake_x - food_x) < 8 and abs(snake_y - food_y) < 8:
                 pygame.mixer.music.load("Sounds\\Food.mp3")
                 pygame.mixer.music.play()
                 score += 1
