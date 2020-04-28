@@ -5,4 +5,7 @@ Open powerShell or command prompt and simply type
 
 pip install pygame 
 
-Do not delete any file
+Do not delete any file it will CRASH the game.
+
+IF ANYONE WANTS TO CONTRIBUTE THEN HE/SHE WILL BE ALWAYS 
+WELCOME
