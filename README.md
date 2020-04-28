@@ -4,3 +4,5 @@ You must have pygame module installed in your machine.
 Open powerShell or command prompt and simply type
 
 pip install pygame 
+
+Do not delete any file
