@@ -15,8 +15,8 @@ blue = (135, 206, 235)
 gold = (255, 215, 0)
 
 # Creating Game Window
-screen_width = 1000
-screen_height = 550
+screen_width: int = 1000
+screen_height: int = 550
 gameWindow = pygame.display.set_mode((screen_width, screen_height))
 
 # Background image
@@ -27,23 +27,23 @@ bgimg1 = pygame.transform.scale(bgimg1, (screen_width, screen_height)).convert_a
 pygame.display.set_caption("Snake Game")
 pygame.display.update()
 clock = pygame.time.Clock()
-font = pygame.font.SysFont(None, 55)
 
 
 # Function for showing text on screen
-def text_screen(text, color, x, y):
+def text_screen(text, color, font_size, x, y):
+    font = pygame.font.SysFont(None, font_size)
     screen_text = font.render(text, True, color)
     gameWindow.blit(screen_text, [x, y])
 
 
 # Plot the snake on window
-def plot_snake(game_window, color, snake_list, snake_size):
+def plot_snake(game_window, snake_list, snake_size):
     i = 1
     for x, y in snake_list:
         if i % 2 == 1:
             pygame.draw.rect(game_window, yellow, [x, y, snake_size, snake_size])
         else:
-            pygame.draw.rect(game_window, color, [x, y, snake_size, snake_size])
+            pygame.draw.rect(game_window, black, [x, y, snake_size, snake_size])
         i += 1
 
 
@@ -54,8 +54,8 @@ def welcome():
     global exit_game
     while not exit_game:
         gameWindow.blit(bgimg1, (0, 0))
-        text_screen("Welcome to Snake game", white, 300, 200)
-        text_screen("Enter Space to Play", white, 330, 250)
+        text_screen("Welcome to Snake game", white, 55, 300, 200)
+        text_screen("Press Space to Play", white, 55, 330, 250)
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
@@ -72,19 +72,19 @@ def welcome():
 def gameLoop():
     # creating Game Specific Variables
     global exit_game
-    game_over = False
-    snake_x = 45
-    snake_y = 55
-    velocity_x = 0
-    velocity_y = 0
-    velocity_update = 4
-    food_x = random.randint(30, screen_width - 30)
-    food_y = random.randint(30, screen_height - 30)
-    snake_size = 15
-    score = 0
-    fps = 70
-    snake_list = []
-    snake_length = 1
+    game_over: bool = False
+    snake_x: int = 45
+    snake_y: int = 55
+    velocity_x: int = 0
+    velocity_y: int = 0
+    velocity_update: int = 4
+    food_x: int = random.randint(30, screen_width - 30)
+    food_y: int = random.randint(30, screen_height - 30)
+    snake_size: int = 15
+    score: int = 0
+    fps: int = 70
+    snake_list: list = []
+    snake_length: int = 1
     # check if High Score file exist
     if not os.path.exists("high_score.txt"):
         with open("high_score.txt", "w") as fp:
@@ -100,9 +100,9 @@ def gameLoop():
             with open("high_score.txt", "w") as fp:
                 fp.write(str(highscore))
             gameWindow.fill(yellow)
-            text_screen("Game Over!", red, 400, 200)
-            text_screen("Score : {}".format(score), red, 425, 250)
-            text_screen("Press Enter to go Home Screen", red, 210, 300)
+            text_screen("Game Over!", red, 55, 400, 200)
+            text_screen("Score : {}".format(score), red, 55, 425, 250)
+            text_screen("Press Enter to go Home Screen", red, 55, 210, 300)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit_game = True
@@ -163,14 +163,19 @@ def gameLoop():
             snake_y += velocity_y
 
             gameWindow.fill(blue)
+            pygame.draw.rect(gameWindow, black, [0, 0, screen_width, snake_size])
+            pygame.draw.rect(gameWindow, black, [0, 0, snake_size, screen_height])
+            pygame.draw.rect(gameWindow, black, [0, screen_height, screen_width, -snake_size])
+            pygame.draw.rect(gameWindow, black, [screen_width - snake_size, 0, screen_width, screen_height])
+
             pygame.draw.rect(gameWindow, red, [food_x, food_y, snake_size, snake_size])
-            text_screen("Score : {}    High Score : {}".format(score, highscore), red, 0, 0)
+            text_screen("Score : {}    High Score : {}".format(score, highscore), white, 25, 16, 0)
 
             if abs(snake_x - food_x) < 8 and abs(snake_y - food_y) < 8:
                 pygame.mixer.music.load("Sounds\\Food.mp3")
-                pygame.mixer.music.play()          # Sound clip play when snake eat food
-                score += 1              # Score increment
-                snake_length += 4            # Increasing snake length
+                pygame.mixer.music.play()  # Sound clip play when snake eat food
+                score += 1  # Score increment
+                snake_length += 4  # Increasing snake length
                 # Creates food at different place
                 food_x = random.randint(50, screen_width - 50)
                 food_y = random.randint(50, screen_height - 50)
@@ -191,16 +196,16 @@ def gameLoop():
                 pygame.mixer.music.load("Sounds\\snake_died.mp3")
                 pygame.mixer.music.play()
 
-            if snake_x < 3 or snake_x > screen_width - 3 or snake_y < 3 or snake_y > screen_height - 3:
+            if snake_x < snake_size or snake_x > screen_width - snake_size or snake_y < snake_size or snake_y > screen_height - snake_size:
                 game_over = True
                 pygame.mixer.music.load("Sounds\\snake_died.mp3")
                 pygame.mixer.music.play()
 
-
-            plot_snake(gameWindow, black, snake_list, snake_size)
+            plot_snake(gameWindow, snake_list, snake_size)
 
         pygame.display.update()
         clock.tick(fps)
+
 
 if __name__ == '__main__':
     welcome()
