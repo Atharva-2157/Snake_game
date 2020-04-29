@@ -47,8 +47,10 @@ def plot_snake(game_window, snake_list, snake_size):
         i += 1
 
 
+# global variables
 exit_game = False
-
+temp_y: int
+temp_x: int
 
 def welcome():
     global exit_game
@@ -71,7 +73,7 @@ def welcome():
 
 def gameLoop():
     # creating Game Specific Variables
-    global exit_game
+    global exit_game, temp_y, temp_x
     game_over: bool = False
     snake_x: int = 45
     snake_y: int = 55
@@ -119,44 +121,53 @@ def gameLoop():
                 # If any key get pressed
                 if event.type == pygame.KEYDOWN:
                     # Handling events for certain keys
+
                     if event.key == pygame.K_RIGHT:
                         # Move the snake in right direction
                         # Except when it moves in left direction
-                        if velocity_x == -velocity_update:
+                        if velocity_x < 0:
                             pass
                         else:
                             velocity_x = velocity_update
                             velocity_y = 0
+                            temp_x, temp_y = [velocity_x, velocity_y]
 
                     if event.key == pygame.K_LEFT:
                         # Move the snake in left direction
                         # Except when it moves in right direction
-                        if velocity_x == velocity_update:
+                        if velocity_x > 0:
                             pass
                         else:
                             velocity_x = -velocity_update
                             velocity_y = 0
+                            temp_x, temp_y = [velocity_x, velocity_y]
 
                     if event.key == pygame.K_UP:
                         # Move the snake in upward direction
                         # Except when it moves in downward direction
-                        if velocity_y == velocity_update:
+                        if velocity_y > 0:
                             pass
                         else:
                             velocity_x = 0
                             velocity_y = -velocity_update
+                            temp_x, temp_y = [velocity_x, velocity_y]
 
                     if event.key == pygame.K_DOWN:
                         # Move the snake in downward direction
                         # Except when it moves in upward direction
-                        if velocity_y == -velocity_update:
+                        if velocity_y < 0:
                             pass
                         else:
                             velocity_x = 0
                             velocity_y = velocity_update
+                            temp_x, temp_y = [velocity_x, velocity_y]
 
                     if event.key == pygame.K_SPACE:
-                        velocity_x = velocity_y = 0
+                        if velocity_x != 0 or velocity_y != 0:
+                            temp_x, temp_y = [velocity_x, velocity_y]
+                            velocity_y = velocity_x = 0
+                        else:
+                            [velocity_x, velocity_y] = temp_x, temp_y
 
             # Snake moves in its corresponding direction
             snake_x += velocity_x
@@ -169,7 +180,8 @@ def gameLoop():
             pygame.draw.rect(gameWindow, black, [screen_width - snake_size, 0, screen_width, screen_height])
 
             pygame.draw.rect(gameWindow, red, [food_x, food_y, snake_size, snake_size])
-            text_screen("Score : {}    High Score : {}".format(score, highscore), white, 25, 16, 0)
+            text_screen(f"Score : {score}    High Score : {highscore}", white, 25, 16, 0)
+            text_screen("Created By : Atharva Diwan", white, 25, 750, 534)
 
             if abs(snake_x - food_x) < 8 and abs(snake_y - food_y) < 8:
                 pygame.mixer.music.load("Sounds\\Food.mp3")
@@ -196,7 +208,7 @@ def gameLoop():
                 pygame.mixer.music.load("Sounds\\snake_died.mp3")
                 pygame.mixer.music.play()
 
-            if snake_x < snake_size or snake_x > screen_width - snake_size or snake_y < snake_size or snake_y > screen_height - snake_size:
+            if snake_x < 30 or snake_x > screen_width - 30 or snake_y < 30 or snake_y > screen_height - 30:
                 game_over = True
                 pygame.mixer.music.load("Sounds\\snake_died.mp3")
                 pygame.mixer.music.play()
