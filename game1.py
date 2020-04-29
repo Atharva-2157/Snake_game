@@ -11,8 +11,8 @@ white = (255, 255, 255)
 red = (255, 0, 0)
 black = (0, 0, 0)
 yellow = (255, 255, 0)
-blue= (135,206,235)
-gold = (255,215,0)
+blue = (135, 206, 235)
+gold = (255, 215, 0)
 
 # Creating Game Window
 screen_width = 1000
@@ -22,7 +22,6 @@ gameWindow = pygame.display.set_mode((screen_width, screen_height))
 # Background image
 bgimg1 = pygame.image.load("Images\\first.jpg")
 bgimg1 = pygame.transform.scale(bgimg1, (screen_width, screen_height)).convert_alpha()
-
 
 # Game Title
 pygame.display.set_caption("Snake Game")
@@ -39,8 +38,13 @@ def text_screen(text, color, x, y):
 
 # Plot the snake on window
 def plot_snake(game_window, color, snake_list, snake_size):
+    i = 1
     for x, y in snake_list:
-        pygame.draw.rect(game_window, color, [x, y, snake_size, snake_size])
+        if i % 2 == 1:
+            pygame.draw.rect(game_window, yellow, [x, y, snake_size, snake_size])
+        else:
+            pygame.draw.rect(game_window, color, [x, y, snake_size, snake_size])
+        i += 1
 
 
 exit_game = False
@@ -107,46 +111,77 @@ def gameLoop():
                     if event.key == pygame.K_RETURN:
                         welcome()
         else:
+            # When user enter close then gmae will get quit
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit_game = True
 
+                # If any key get pressed
                 if event.type == pygame.KEYDOWN:
+                    # Handling events for certain keys
                     if event.key == pygame.K_RIGHT:
-                        velocity_x = velocity_update
-                        velocity_y = 0
+                        # Move the snake in right direction
+                        # Except when it moves in left direction
+                        if velocity_x == -velocity_update:
+                            pass
+                        else:
+                            velocity_x = velocity_update
+                            velocity_y = 0
 
                     if event.key == pygame.K_LEFT:
-                        velocity_x = -velocity_update
-                        velocity_y = 0
+                        # Move the snake in left direction
+                        # Except when it moves in right direction
+                        if velocity_x == velocity_update:
+                            pass
+                        else:
+                            velocity_x = -velocity_update
+                            velocity_y = 0
 
                     if event.key == pygame.K_UP:
-                        velocity_x = 0
-                        velocity_y = -velocity_update
+                        # Move the snake in upward direction
+                        # Except when it moves in downward direction
+                        if velocity_y == velocity_update:
+                            pass
+                        else:
+                            velocity_x = 0
+                            velocity_y = -velocity_update
 
                     if event.key == pygame.K_DOWN:
-                        velocity_x = 0
-                        velocity_y = velocity_update
+                        # Move the snake in downward direction
+                        # Except when it moves in upward direction
+                        if velocity_y == -velocity_update:
+                            pass
+                        else:
+                            velocity_x = 0
+                            velocity_y = velocity_update
 
+                    if event.key == pygame.K_SPACE:
+                        velocity_x = velocity_y = 0
+
+            # Snake moves in its corresponding direction
             snake_x += velocity_x
             snake_y += velocity_y
-
-            if abs(snake_x - food_x) < 8 and abs(snake_y - food_y) < 8:
-                pygame.mixer.music.load("Sounds\\Food.mp3")
-                pygame.mixer.music.play()
-                score += 1
-                snake_length += 5
-                food_x = random.randint(50, screen_width - 50)
-                food_y = random.randint(50, screen_height - 50)
-                if score > int(highscore):
-                    highscore = score
 
             gameWindow.fill(blue)
             pygame.draw.rect(gameWindow, red, [food_x, food_y, snake_size, snake_size])
             text_screen("Score : {}    High Score : {}".format(score, highscore), red, 0, 0)
 
+            if abs(snake_x - food_x) < 8 and abs(snake_y - food_y) < 8:
+                pygame.mixer.music.load("Sounds\\Food.mp3")
+                pygame.mixer.music.play()          # Sound clip play when snake eat food
+                score += 1              # Score increment
+                snake_length += 4            # Increasing snake length
+                # Creates food at different place
+                food_x = random.randint(50, screen_width - 50)
+                food_y = random.randint(50, screen_height - 50)
+                # Maintaining high score
+                if score > int(highscore):
+                    highscore = score
+
             head = [snake_x, snake_y]
-            snake_list.append(head)
+            if head not in snake_list:
+                snake_list.append(head)
+            # print(snake_list[-1])
 
             if len(snake_list) > snake_length:
                 del snake_list[0]
@@ -156,20 +191,18 @@ def gameLoop():
                 pygame.mixer.music.load("Sounds\\snake_died.mp3")
                 pygame.mixer.music.play()
 
-            if snake_x < 0 or snake_x > screen_width or snake_y < 0 or snake_y > screen_height:
+            if snake_x < 3 or snake_x > screen_width - 3 or snake_y < 3 or snake_y > screen_height - 3:
                 game_over = True
                 pygame.mixer.music.load("Sounds\\snake_died.mp3")
                 pygame.mixer.music.play()
+
 
             plot_snake(gameWindow, black, snake_list, snake_size)
 
         pygame.display.update()
         clock.tick(fps)
 
+if __name__ == '__main__':
+    welcome()
     pygame.quit()
     quit()
-
-
-welcome()
-pygame.quit()
-quit()
