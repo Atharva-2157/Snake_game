@@ -1,0 +1,10 @@
+Snake Color = Gold
+Food color = Red
+Press up arrow key to go upward. 
+Press down arrow key to go downward. 
+Press right arrow key to go right. 
+Press left arrow key to go left.
+Score will increase by 1 afte eating 1 food
+also snake length will increase.
+If snake hits side walls the or itself game will over.
+

@@ -13,6 +13,12 @@ black = (0, 0, 0)
 yellow = (255, 255, 0)
 blue = (135, 206, 235)
 gold = (255, 215, 0)
+green = (0, 255, 0)
+
+# global variables
+exit_game = False
+temp_y: int = 0
+temp_x: int = 0
 
 # Creating Game Window
 screen_width: int = 1000
@@ -29,9 +35,31 @@ pygame.display.update()
 clock = pygame.time.Clock()
 
 
+class Button:
+    def __init__(self, win, color, text, x, y, width, height):
+        self.win = win
+        self.color = color
+        self.text = text
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def draw(self):
+        pygame.draw.rect(self.win, self.color, [self.x, self.y, self.width, self.height])
+        text_screen(self.text, white, 30, self.x + 11, self.y + 9)
+
+    def isHover(self, position):
+        if self.x < position[0] < self.x + self.width:
+            if self.y < position[1] < self.y + self.height:
+                return True
+
+        return False
+
+
 # Function for showing text on screen
 def text_screen(text, color, font_size, x, y):
-    font = pygame.font.SysFont(None, font_size)
+    font = pygame.font.SysFont("comicsans", font_size)
     screen_text = font.render(text, True, color)
     gameWindow.blit(screen_text, [x, y])
 
@@ -47,25 +75,56 @@ def plot_snake(game_window, snake_list, snake_size):
         i += 1
 
 
-# global variables
-exit_game = False
-temp_y: int
-temp_x: int
-
 def welcome():
     global exit_game
+    play_button = Button(gameWindow, green, "Play", 470, 200, 65, 35)
+    # help_button = Button(gameWindow, green, "Help", 470, 300, 65, 35)
+    quit_button = Button(gameWindow, green, "Quit", 470, 300, 65, 35)
     while not exit_game:
         gameWindow.blit(bgimg1, (0, 0))
-        text_screen("Welcome to Snake game", white, 55, 300, 200)
-        text_screen("Press Space to Play", white, 55, 330, 250)
+        play_button.draw()
+        # help_button.draw()
+        quit_button.draw()
+        text_screen("Welcome to Snake game", white, 55, 300, 100)
+        # text_screen("Press Space to Play", white, 55, 330, 150)
         for event in pygame.event.get():
+            pos = pygame.mouse.get_pos()
 
             if event.type == pygame.QUIT:
                 exit_game = True
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+            if event.type == pygame.MOUSEMOTION:
+                if play_button.isHover(pos):
+                    play_button.color = gold
+                else:
+                    play_button.color = green
+
+                # if help_button.isHover(pos):
+                #     help_button.color = gold
+                # else:
+                #     help_button.color = green
+
+                if quit_button.isHover(pos):
+                    quit_button.color = red
+                else:
+                    quit_button.color = green
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if play_button.isHover(pos):
                     gameLoop()
+
+                # if help_button.isHover(pos):
+                #     with open("help.txt","r") as f:
+                #         content = f.read()
+                #     gameWindow.fill(white)
+                #     text_screen(content, black, 25, 10, 10)
+
+                if quit_button.isHover(pos):
+                    exit_game = True
+
+            # if event.type == pygame.KEYDOWN:
+            #     if event.key == pygame.K_SPACE:
+            #         gameLoop()
 
             pygame.display.update()
             clock.tick(60)
@@ -75,8 +134,8 @@ def gameLoop():
     # creating Game Specific Variables
     global exit_game, temp_y, temp_x
     game_over: bool = False
-    snake_x: int = 45
-    snake_y: int = 55
+    snake_x: int = 200
+    snake_y: int = 100
     velocity_x: int = 0
     velocity_y: int = 0
     velocity_update: int = 4
@@ -85,7 +144,7 @@ def gameLoop():
     snake_size: int = 15
     score: int = 0
     fps: int = 70
-    snake_list: list = []
+    snake_list = []
     snake_length: int = 1
     # check if High Score file exist
     if not os.path.exists("high_score.txt"):
@@ -125,7 +184,7 @@ def gameLoop():
                     if event.key == pygame.K_RIGHT:
                         # Move the snake in right direction
                         # Except when it moves in left direction
-                        if velocity_x < 0:
+                        if velocity_x < 0 or temp_x < 0:
                             pass
                         else:
                             velocity_x = velocity_update
@@ -135,7 +194,7 @@ def gameLoop():
                     if event.key == pygame.K_LEFT:
                         # Move the snake in left direction
                         # Except when it moves in right direction
-                        if velocity_x > 0:
+                        if velocity_x > 0 or temp_x > 0:
                             pass
                         else:
                             velocity_x = -velocity_update
@@ -145,7 +204,7 @@ def gameLoop():
                     if event.key == pygame.K_UP:
                         # Move the snake in upward direction
                         # Except when it moves in downward direction
-                        if velocity_y > 0:
+                        if velocity_y > 0 or temp_y > 0:
                             pass
                         else:
                             velocity_x = 0
@@ -155,7 +214,7 @@ def gameLoop():
                     if event.key == pygame.K_DOWN:
                         # Move the snake in downward direction
                         # Except when it moves in upward direction
-                        if velocity_y < 0:
+                        if velocity_y < 0 or temp_y < 0:
                             pass
                         else:
                             velocity_x = 0
@@ -167,6 +226,7 @@ def gameLoop():
                             temp_x, temp_y = [velocity_x, velocity_y]
                             velocity_y = velocity_x = 0
                         else:
+                            # assert isinstance(temp_y, int)
                             [velocity_x, velocity_y] = temp_x, temp_y
 
             # Snake moves in its corresponding direction
@@ -196,6 +256,9 @@ def gameLoop():
                     highscore = score
 
             head = [snake_x, snake_y]
+            # if snake_list[-1] == head:
+            #     text_screen("Game paused", white, 35, 600, 0)
+
             if head not in snake_list:
                 snake_list.append(head)
             # print(snake_list[-1])
@@ -208,7 +271,7 @@ def gameLoop():
                 pygame.mixer.music.load("Sounds\\snake_died.mp3")
                 pygame.mixer.music.play()
 
-            if snake_x < 30 or snake_x > screen_width - 30 or snake_y < 30 or snake_y > screen_height - 30:
+            if snake_x < 15 or snake_x > screen_width - 30 or snake_y < 15 or snake_y > screen_height - 30:
                 game_over = True
                 pygame.mixer.music.load("Sounds\\snake_died.mp3")
                 pygame.mixer.music.play()
