@@ -169,6 +169,12 @@ def gameLoop():
             # GAME_WINDOW.fill(YELLOW)
             GAME_WINDOW.blit(IMAGES['GAME_OVER'], (0, 0))
             GAME_WINDOW.blit(LABELS['GAME_OVER'], (300, 50))
+            GAME_WINDOW.blit(LABELS['SCORE'], (320, 100))
+            k = 0
+            my_digits = [x for x in str(score)]
+            for i in my_digits:
+                GAME_WINDOW.blit(DIGITS[i], (560 + (k * 30), 135))
+                k += 1
         else:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

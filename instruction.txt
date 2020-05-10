@@ -1,0 +1,24 @@
+open command prompt or windows powerShell and type
+pip install pygmae
+pip install pyinstaller
+
+pygame is needed for your Snake.py file
+
+pyinstaller is used to make .exe executable file from python script file
+use command :
+pyinstaller <file_name.py>
+# this will make .exe file with some additional files
+
+# if you need only one file then type
+pyinstaller -F <file_name.py>
+# this will make only one file
+
+pyinstaller -w <file-name.py>   # it will not allow to show console window
+# It is useful when you are making a GUI
+
+pyinstaller -i <image_name.ico> <file_name.py>
+# it will make the exe file with the icon of the perticular image
+# image file must be with .ico extension
+
+# i usually prefer the command
+pyinstaller -w -F -i <image_file.ico> <file_name.py>
