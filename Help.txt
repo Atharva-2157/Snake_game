@@ -6,5 +6,6 @@ Press right arrow key to go right.
 Press left arrow key to go left.
 Score will increase by 1 afte eating 1 food
 also snake length will increase.
-If snake hits side walls the or itself game will over.
+You will pause/resume game using space bar
+If snake hits itself game will over.
 
